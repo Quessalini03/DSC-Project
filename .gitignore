@@ -2,12 +2,7 @@
 *
 
 # Except these
-!P1a.cpp
-!P1b.cpp
-!P1c.cpp
-!P2a.cpp
-!P2b.cpp
-!P2c.cpp
+!*.cpp
 !.gitignore
 !Evaluating expressions.pdf
 !README.md
