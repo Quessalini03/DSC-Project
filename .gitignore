@@ -1,6 +1,6 @@
 # Ignore everythings...
 *
-**/
+**/*
 
 # Except these
 !*.cpp
