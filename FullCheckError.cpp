@@ -42,29 +42,27 @@ bool bracesIsBalanced(string str) //  )((
     if (cStack.size() == 0) return 1;
     else return 0;
 }
-bool checkPrecedence(string tmp,int counter, bool& a, int& temp)
+bool checkPrecedence(string tmp, int counter, bool& check, int& temp)
 {
-    if (tmp[counter] == ')') temp = 0;
+    if (tmp[counter] == ')')
+        if (tmp[counter - 1] != '(') temp = 0;
     if (OpPrec(tmp[counter]) == 2)
     {
-        if (temp == 0) a = false;
-        if (a == true) return true;
-        a = true;
+        if (temp == 0) check = false;
+        if (check == true) return true;
+        check = true;
         temp++;
     }
     if (OpPrec(tmp[counter]) == 1)
     {
-        if (OpPrec(tmp[counter + 1]) == 1) return false;
-        else if (tmp[counter + 1] == ' ')
+        if (OpPrec(tmp[counter]) == 1)
         {
-            while (tmp[++counter] == ' ') continue;
             if (OpPrec(tmp[counter + 1]) == 1) return false;
-        }
-        else
-        {
-            if (temp == 0) a = true;
-            if (a == false) return true;
-            a = false;
+            while (tmp[counter + 1] == ' ') counter++;
+            if (OpPrec(tmp[counter + 1]) == 1) return false;
+            if (temp == 0) check = true;
+            if (check == false) return true;
+            check = false;
             temp++;
         }
     }
@@ -73,26 +71,20 @@ bool checkPrecedence(string tmp,int counter, bool& a, int& temp)
 bool checkBlank(string str)
 {
     bool check = false;
-    for (int i = 0; i <= str.size(); i++)
+    for (int i = 0; str[i]; i++)
     {
         if (isdigit(str[i])) check = true;
+        if (OpPrec(str[i]) == 1 || OpPrec(str[i]) == 2 || OpPrec(str[i]) == 3 || (str[i]) == '.') check = false;
         if (str[i] == ' ')
-        {
             if (check == true)
-            {
-                if (isdigit(str[i + 1]))
-                    return true;
-                if (str[i + 1] == '+' || str[i + 1] == '-' || str[i + 1] == '*' || str[i + 1] == '/' || str[i + 1] == '^')
-                    check = false;
-            }
-        }
+                if (isdigit(str[i + 1])) return true;
     }
     return false;
 }
 int main()
 {
     //driver code
-    string tmp = "(  (( 1 +- 2 ))  -()2*   (9 ^  3))";
+    string tmp = "((1.2 () + 1 / 2 () + 2) - 2.3)";
     bool check = true;
     int temp = 0;
     int counter = 0;
@@ -111,7 +103,7 @@ int main()
                 break;
             }
         }
-        if (checkPrecedence(tmp,counter, check, temp))
+        if (checkPrecedence(tmp, counter, check, temp))
         {
             cout << "Precedence Error";
             break;
