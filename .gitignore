@@ -1,5 +1,6 @@
 # Ignore everythings...
 *
+**/
 
 # Except these
 !*.cpp
@@ -7,3 +8,8 @@
 !Evaluating expressions.pdf
 !README.md
 !Documents.txt
+!FuncDes.txt
+!Err_Checking/
+!Graph_Generating/
+!Formating/
+!**/*.cpp
