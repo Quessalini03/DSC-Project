@@ -81,51 +81,55 @@ bool checkBlank(string str)
     }
     return false;
 }
-int main()
+void errorCheck(string input)//function will cerr error name and exit(1) if there is an error
 {
-    //driver code
-    string tmp = "((1.2 () + 1 / 2 () + 2) - 2.3)";
     bool check = true;
     int temp = 0;
     int counter = 0;
-    while (tmp[counter] != '\0')
+    while (input[counter] != '\0')
     {
         if (counter == 0)
         {
-            if (!bracesIsBalanced(tmp))
+            if (!bracesIsBalanced(input))
             {
-                cout << "Parenthesis error";
-                break;
+                cerr << "Parenthesis error";
+                exit(1);
             }
-            if (checkBlank(tmp))
+            if (checkBlank(input))
             {
-                cout << "Blank error";
-                break;
-            }
-        }
-        if (checkPrecedence(tmp, counter, check, temp))
-        {
-            cout << "Precedence Error";
-            break;
-        }
-        if (OpPrec(tmp[counter]) >= 2) // only need to check if op = * or / of ^
-        {
-            if (checkConsecutiveOp(OpPrec(tmp[counter]), OpPrec(tmp[counter + 1])))
-            {
-                cout << "Invalid Input Error";
-                break;
+                cerr << "Blank error";
+                exit(1);
             }
         }
-        if (tmp[counter] == '.')
+        if (checkPrecedence(input, counter, check, temp))
         {
-            if (checkFloatingPoint(tmp[counter], tmp[counter + 1]))
+            cerr << "Precedence Error";
+            exit(1);
+        }
+        if (OpPrec(input[counter]) >= 2) // only need to check if op = * or / of ^
+        {
+            if (checkConsecutiveOp(OpPrec(input[counter]), OpPrec(input[counter + 1])))
             {
-                cout << "FLoating Point Error";
-                break;
+                cerr << "Invalid Input Error";
+                exit(1);
+            }
+        }
+        if (input[counter] == '.')
+        {
+            if (checkFloatingPoint(input[counter], input[counter + 1]))
+            {
+                cerr << "FLoating Point Error";
+                exit(1);
             }
         }
         counter++;
     }
-    if (tmp[counter] == '\0') cout << "No Error" << endl;
+}
+int main()
+{
+    //driver code
+    string tmp = "((1.2 () + 1 / 2 () + 2) - 2.3)";
+    errorCheck(tmp);
+    cout << "do something" << endl;
     return 0;
 }
