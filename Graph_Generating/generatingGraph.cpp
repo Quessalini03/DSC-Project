@@ -39,17 +39,19 @@ public:
 };
 
 node* GenerateGraph(string, int);
+string preOrder(node*);
 
 int main()
 {
 	//string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
 
-	string s = "p&q&(!p|!!!r|r)|!!!(q+r+e+s+!(!(!t)))";
-
+	// string s = "p&q&(!p|!!!r|r)|!!!(q+r+e+s+!(!(!t)))";
+	string s = "24/(6+2)-3";
 	// Type: 1. Mathematic Version	2. Logical Version
-	node* Head = GenerateGraph(s, 2);
-
-	Head->showNode();
+	node* Head = GenerateGraph(s, 1);
+	string demo = preOrder(Head);
+	cout << demo << '\n';
+	//Head->showNode();
 }
 
 string FormatString_V1(string s)
@@ -401,4 +403,26 @@ node* GenerateGraph(string s, int Type)
 	}
 	else
 		return nullptr;
+}
+
+string preOrder(node* root)
+{
+	if (root)
+	{
+		stack<node*> nStack;
+		string retStr;
+		retStr += root->getVal();
+		if ( root->getRight() ) nStack.push( root->getRight() );
+		if ( root->getLeft() ) nStack.push( root->getLeft() );
+		while ( !nStack.empty() )
+		{
+			node* tempNode = nStack.top();
+			retStr += ' ' + tempNode->getVal();
+			nStack.pop();
+			if ( tempNode->getRight() ) nStack.push( tempNode->getRight() );
+			if ( tempNode->getLeft() ) nStack.push( tempNode->getLeft() );
+		}
+		return retStr;
+	}
+	else cout << "Tree does not exist!\n";
 }
