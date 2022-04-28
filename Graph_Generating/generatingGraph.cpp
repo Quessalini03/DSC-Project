@@ -1,6 +1,8 @@
 #include<iostream>
 #include<string.h>
 #include<stack>
+#include<sstream>
+#include<cmath>
 using namespace std;
 
 class node
@@ -40,17 +42,25 @@ public:
 
 node* GenerateGraph(string, int);
 string preOrder(node*);
+string postOrder(node*);
+double postOrderEval(string);
 
 int main()
 {
-	//string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
+	// string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
 
 	// string s = "p&q&(!p|!!!r|r)|!!!(q+r+e+s+!(!(!t)))";
-	string s = "24/(6+2)-3";
+	// string s = "24/(6+2)-3";
+	string s = "(69/3)+7-3*8";
 	// Type: 1. Mathematic Version	2. Logical Version
 	node* Head = GenerateGraph(s, 1);
-	string demo = preOrder(Head);
-	cout << demo << '\n';
+	cout << "Original: " << s << '\n';
+	string pre = preOrder(Head);
+	cout << "Preorder: " << pre << '\n';
+	string post = postOrder(Head);
+	cout << "Postorder: " << post << '\n';
+	double res = postOrderEval(post);
+	cout << "Result: " << res << '\n';	
 	//Head->showNode();
 }
 
@@ -424,5 +434,99 @@ string preOrder(node* root)
 		}
 		return retStr;
 	}
-	else cout << "Tree does not exist!\n";
+	else 
+	{
+		cout << "Tree does not exist!\n";
+		return "";
+	}
 }
+
+string postOrder(node* root)
+{
+	if (root)
+	{
+		stack<node*> nStack1;
+		stack<node*> nStack2;		
+		nStack1.push(root);
+		while ( !nStack1.empty() )
+		{
+			node* tempNode = nStack1.top();
+			nStack1.pop();
+			nStack2.push(tempNode);
+			if ( tempNode->getLeft() ) nStack1.push( tempNode->getLeft() );
+			if ( tempNode->getRight() ) nStack1.push( tempNode->getRight() );
+		}
+		int stack2Size = nStack2.size();
+		string retStr;
+		for ( ; stack2Size - 1; stack2Size--)
+		{
+			retStr += nStack2.top()->getVal() + ' ';
+			nStack2.pop();
+		}
+		retStr += nStack2.top()->getVal();
+		nStack2.pop();
+		return retStr;
+	}
+	else 
+	{
+		cout << "Tree does not exist!\n";
+		return "";
+	}
+}
+
+double postOrderEval(string str)
+{
+	stringstream sstr(str);
+	stack<double> dStack;
+	string temp;
+	while ( !sstr.eof() )
+	{
+		sstr >> temp;
+		if ( temp.size() == 1)
+		{
+			if (temp[0] >= '0' && temp[0] <= '9') 
+			{
+				dStack.push( stod(temp) );
+				continue;	
+			}
+			else 
+			{
+				double op2 = dStack.top();
+				dStack.pop();
+				double op1 = dStack.top();
+				dStack.pop();
+				switch (char(temp[0]))
+				{
+					case '*':
+						dStack.push(op1*op2);
+						break;
+					case '/':
+						if (!op2) 
+						{
+							cerr << "Divide by 0\n";
+							exit(1);
+						}
+						dStack.push(op1/op2);
+						break;
+					case '+':
+						dStack.push(op1+op2);
+						break;
+					case '-':
+						dStack.push(op1-op2);
+						break;
+					case '^':
+						dStack.push( pow(op1, op2) );
+						break;
+					default:
+						cout << "Invalid operand " << temp << '\n';
+						break;
+					
+				}
+			}
+		}
+		else dStack.push( stod(temp) );
+	}
+	if ( !dStack.empty() ) return dStack.top();
+	else return -696969.0;
+}
+
