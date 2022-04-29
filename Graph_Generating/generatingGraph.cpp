@@ -3,6 +3,8 @@
 #include<stack>
 #include<sstream>
 #include<cmath>
+#include<iomanip>
+#include<limits>
 using namespace std;
 
 class node
@@ -40,27 +42,58 @@ public:
 	}
 };
 
+enum EvalOption
+{
+	prefix,
+	postfix,
+};
+
 node* GenerateGraph(string, int);
 string preOrder(node*);
 string postOrder(node*);
-double postOrderEval(string);
+double expressionEval(string, EvalOption);
 
 int main()
 {
-	// string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
+	string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
 
-	// string s = "p&q&(!p|!!!r|r)|!!!(q+r+e+s+!(!(!t)))";
-	// string s = "24/(6+2)-3";
-	string s = "(69/3)+7-3*8";
+	//string s = "p&q&(!p|!!!r|r)|!!!(q+r+e+s+!(!(!t)))";
+	//string s = "1/2+5/7";
+	//string s = "(69/3)+7-3^3";
 	// Type: 1. Mathematic Version	2. Logical Version
 	node* Head = GenerateGraph(s, 1);
+	EvalOption opt;
+	bool valid = 0;
+	while (!valid)
+	{
+		cout << "Option (0 for prefix, 1 for postfix): ";
+		int temp;
+		cin >> temp;
+		if (cin.fail())
+		{
+			cout << "Invalid option!\n";
+		    cin.clear(); 
+		    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		    continue;
+		}
+		if (temp == 0 || temp == 1) 
+		{
+			opt = EvalOption(temp);
+			valid = 1;
+		}
+		else 
+		{
+			cout << "Invalid option!\n";
+			valid = 0;
+		}
+	}
 	cout << "Original: " << s << '\n';
 	string pre = preOrder(Head);
 	cout << "Preorder: " << pre << '\n';
 	string post = postOrder(Head);
 	cout << "Postorder: " << post << '\n';
-	double res = postOrderEval(post);
-	cout << "Result: " << res << '\n';	
+	double res = expressionEval(pre, opt);
+	cout << "Result: " << fixed << setprecision(4) << res << '\n';	
 	//Head->showNode();
 }
 
@@ -432,11 +465,13 @@ string preOrder(node* root)
 			if ( tempNode->getRight() ) nStack.push( tempNode->getRight() );
 			if ( tempNode->getLeft() ) nStack.push( tempNode->getLeft() );
 		}
+		
 		return retStr;
 	}
 	else 
 	{
 		cout << "Tree does not exist!\n";
+		
 		return "";
 	}
 }
@@ -456,6 +491,7 @@ string postOrder(node* root)
 			if ( tempNode->getLeft() ) nStack1.push( tempNode->getLeft() );
 			if ( tempNode->getRight() ) nStack1.push( tempNode->getRight() );
 		}
+		
 		int stack2Size = nStack2.size();
 		string retStr;
 		for ( ; stack2Size - 1; stack2Size--)
@@ -463,19 +499,54 @@ string postOrder(node* root)
 			retStr += nStack2.top()->getVal() + ' ';
 			nStack2.pop();
 		}
+		
 		retStr += nStack2.top()->getVal();
 		nStack2.pop();
+		
 		return retStr;
 	}
 	else 
 	{
 		cout << "Tree does not exist!\n";
+		
 		return "";
 	}
 }
 
-double postOrderEval(string str)
+string reverse(string str)
 {
+	stringstream ssin(str);
+	stack<string> sStack;
+	string temp;
+	while ( !ssin.eof() )
+	{
+		ssin >> temp;
+		sStack.push(temp); 
+	}
+	
+	string retStr;
+	retStr += sStack.top();
+	sStack.pop();
+	while ( !sStack.empty() )
+	{
+		retStr += ' ' + sStack.top();
+		sStack.pop();
+	}
+	
+	return retStr;
+}
+
+double expressionEval(string str, EvalOption opt /*= undetermined*/)
+{
+	switch (opt)
+	{
+		case prefix:
+			str = reverse(str);
+			break;
+		case postfix:
+			break;
+	}
+	
 	stringstream sstr(str);
 	stack<double> dStack;
 	string temp;
@@ -491,10 +562,22 @@ double postOrderEval(string str)
 			}
 			else 
 			{
-				double op2 = dStack.top();
-				dStack.pop();
-				double op1 = dStack.top();
-				dStack.pop();
+				double op1;
+				double op2;
+				if (opt == prefix)
+				{
+					op1 = dStack.top();
+					dStack.pop();
+					op2 = dStack.top();
+					dStack.pop();
+				}
+				else 
+				{
+					op2 = dStack.top();
+					dStack.pop();
+					op1 = dStack.top();
+					dStack.pop();
+				}
 				switch (char(temp[0]))
 				{
 					case '*':
@@ -503,7 +586,7 @@ double postOrderEval(string str)
 					case '/':
 						if (!op2) 
 						{
-							cerr << "Divide by 0\n";
+							cerr << "Divide by 0 error!\n";
 							exit(1);
 						}
 						dStack.push(op1/op2);
@@ -515,10 +598,15 @@ double postOrderEval(string str)
 						dStack.push(op1-op2);
 						break;
 					case '^':
-						dStack.push( pow(op1, op2) );
+						if (op1 != 0.0 && op2 != 0.0) dStack.push( pow(op1, op2) );
+						else 
+						{
+							cerr << "Undefined error!\n";
+							exit(1);
+						} 
 						break;
 					default:
-						cout << "Invalid operand " << temp << '\n';
+						cout << "Illegal operator \"" << temp << "\"\n";
 						break;
 					
 				}
@@ -527,6 +615,10 @@ double postOrderEval(string str)
 		else dStack.push( stod(temp) );
 	}
 	if ( !dStack.empty() ) return dStack.top();
-	else return -696969.0;
+	else 
+	{
+		cerr << "Expression error!\n";
+		exit(1);
+	}
 }
 
