@@ -15,7 +15,7 @@ bool checkBlank(string str);
 void errorCheck(string input);
 void eraseBlank(string & str);
 void removeEmptyParen(string & str);
-void formating(string & str);
+void preprocess(string & str);
 node* GenerateGraph(string s);
 string preOrder(node* root);
 void reduceConsecutiveAddnSub(string & str);
@@ -61,7 +61,7 @@ int main()
 	string str;
 	getline(cin, str);
 
-	formating(str);
+	preprocess(str);
 	errorCheck(str);
 	
 	node* root = GenerateGraph(str);
@@ -165,25 +165,25 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (!bracesIsBalanced(input))
             {
-                cerr << "Parenthesis error";
+                cerr << "Syntax error!";
                 exit(1);
             }
             if (checkBlank(input))
             {
-                cerr << "Blank error";
+                cerr << "Syntax error!";
                 exit(1);
             }
         }
         if (checkPrecedence(input, counter, check, temp))
         {
-            cerr << "Precedence Error";
+            cerr << "Multiple-output error!";
             exit(1);
         }
         if (OpPrec(input[counter]) >= 2) // only need to check if op = * or / of ^
         {
             if (checkConsecutiveOp(OpPrec(input[counter]), OpPrec(input[counter + 1])))
             {
-                cerr << "Invalid Input Error";
+                cerr << "Undefined error!";
                 exit(1);
             }
         }
@@ -191,7 +191,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (checkFloatingPoint(input[counter], input[counter + 1]))
             {
-                cerr << "FLoating Point Error";
+                cerr << "Syntax error!";
                 exit(1);
             }
         }
@@ -222,8 +222,11 @@ void eraseBlank(string & str)
 				if (str[i+1] == ' ') continue;
 			 	high = i;
 			}
-			str.erase(low, high - low + 1);
-			i = low - 1;
+			if ( !(str[low - 1] >= '0' && str[low - 1] <= '9' && str[high + 1] >= '0' && str[high + 1] <= '9') )
+			{
+				str.erase(low, high - low + 1);
+				i = low - 1;
+			}
 			remove = 0;
 		}
 	}
@@ -298,7 +301,7 @@ void reduceConsecutiveAddnSub(string & str)
 	}
 }
 
-void formating(string & str)
+void preprocess(string & str)
 {
 	eraseBlank(str);
 	removeEmptyParen(str);
