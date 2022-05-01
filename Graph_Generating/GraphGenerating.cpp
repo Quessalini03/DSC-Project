@@ -1,15 +1,11 @@
-#include<iostream>
+﻿#include<iostream>
 #include<string.h>
 #include<stack>
-#include<sstream>
-#include<cmath>
-#include<iomanip>
-#include<limits>
 using namespace std;
 
 class node
 {
-	string val;
+	string val = "";
 	node* left;
 	node* right;
 
@@ -40,68 +36,48 @@ public:
 			right->showNode();
 		cout << ")";
 	}
-};
 
-enum EvalOption
-{
-	prefix,
-	postfix,
+	void showPrefix(node* current)
+	{
+		cout << current->val << " ";
+		if (current->left != nullptr)
+			showPrefix(current->left);
+		if (current->right != nullptr)
+			showPrefix(current->right);
+	}
+
+	void showPostfix(node* current)
+	{
+		if (current->left != nullptr)
+			showPostfix(current->left);
+		if (current->right != nullptr)
+			showPostfix(current->right);
+
+		cout << current->val << " ";
+	}
 };
 
 node* GenerateGraph(string, int);
-string preOrder(node*);
-string postOrder(node*);
-double expressionEval(string, EvalOption);
 
 int main()
 {
-	string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
+	//string s = "485.25*253.45--25.698*(7/526.85-+-+-(85*--25/2578++25^(24-85+-25)))";
 
 	//string s = "p&q&(!p|!!!r|r)|!!!(q+r+e+s+!(!(!t)))";
-	//string s = "1/2+5/7";
-	//string s = "(69/3)+7-3^3";
+
+	string s = "6/(-3)+2";
+
 	// Type: 1. Mathematic Version	2. Logical Version
 	node* Head = GenerateGraph(s, 1);
-	EvalOption opt;
-	bool valid = 0;
-	while (!valid)
-	{
-		cout << "Option (0 for prefix, 1 for postfix): ";
-		int temp;
-		cin >> temp;
-		if (cin.fail())
-		{
-			cout << "Invalid option!\n";
-		    cin.clear(); 
-		    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		    continue;
-		}
-		if (temp == 0 || temp == 1) 
-		{
-			opt = EvalOption(temp);
-			valid = 1;
-		}
-		else 
-		{
-			cout << "Invalid option!\n";
-			valid = 0;
-		}
-	}
-	cout << "Original: " << s << '\n';
-	string pre = preOrder(Head);
-	cout << "Preorder: " << pre << '\n';
-	string post = postOrder(Head);
-	cout << "Postorder: " << post << '\n';
-	double res = expressionEval(pre, opt);
-	cout << "Result: " << fixed << setprecision(4) << res << '\n';	
-	//Head->showNode();
+
+	Head->showPrefix(Head); cout << endl;
+	Head->showPostfix(Head);
 }
 
 string FormatString_V1(string s)
 {
 	string str = "";
-	int len = s.size();
-	for (int i = 0; i < len; i++)
+	for (int i = 0; i < s.length(); i++)
 	{
 		if (s[i] == '+' || s[i] == '-')
 		{
@@ -131,8 +107,7 @@ string FormatString_V1(string s)
 string FormatString_V2(string s)
 {
 	string str = "";
-	int len = s.size();
-	for (int i = 0; i < len; i++)
+	for (int i = 0; i < s.length(); i++)
 	{
 		if (s[i] == '!')
 		{
@@ -166,14 +141,11 @@ node* FindingChar(string& subleft, string& subright, string const& charlist, str
 	node* Head = nullptr;
 
 	string* ptr = &subright;
-	
-	int lenEx = expression.length();
-	int lenCh = charlist.length();
-	int lenPreCh = precharList.length();
-	for (int i = lenEx - 1; i >= 0; i--)
+
+	for (int i = expression.length() - 1; i >= 0; i--)
 	{
 		bool isOperator = false;
-		for (int j = 0; j < lenCh; j++)
+		for (int j = 0; j < charlist.length(); j++)
 		{
 			if (expression[i] == charlist[j])
 			{
@@ -182,7 +154,7 @@ node* FindingChar(string& subleft, string& subright, string const& charlist, str
 					if (i > 0)
 					{
 						bool isAdjacency = false;
-						for (int k = 0; k < lenPreCh; k++)
+						for (int k = 0; k < precharList.length(); k++)
 						{
 							if (expression[i - 1] == precharList[k])
 							{
@@ -235,11 +207,9 @@ node* FindingChar(string& subleft, string& subright, string const& charlist, str
 
 bool isExpression(string expression, string operatorlist)
 {
-	int lenEx = expression.length();
-	int lenOp = operatorlist.length();
-	for (int i = 0; i < lenEx; i++)
+	for (int i = 0; i < expression.length(); i++)
 	{
-		for (int j = 0; j < lenOp; j++)
+		for (int j = 0; j < operatorlist.length(); j++)
 		{
 			if (expression[i] == operatorlist[j])
 				return true;
@@ -273,8 +243,11 @@ node* AnalysisV1(string s)
 		// If not we will continue checking to another operator with the order: "+-" -> "*/" -> "^" -> "()"
 		if (Head != nullptr)
 		{
-			Head->setLeft(AnalysisV1(subleft == "" ? "0" : subleft));
-			Head->setRight(AnalysisV1(subright == "" ? "0" : subright));
+			if (subleft != "")
+				Head->setLeft(AnalysisV1(subleft));
+
+			if (subright != "")
+				Head->setRight(AnalysisV1(subright));
 
 			return Head;
 		}
@@ -290,8 +263,11 @@ node* AnalysisV1(string s)
 		// Recursive or not
 		if (Head != nullptr)
 		{
-			Head->setLeft(AnalysisV1(subleft == "" ? "0" : subleft));
-			Head->setRight(AnalysisV1(subright == "" ? "0" : subright));
+			if (subleft != "")
+				Head->setLeft(AnalysisV1(subleft));
+
+			if (subright != "")
+				Head->setRight(AnalysisV1(subright));
 
 			return Head;
 		}
@@ -307,8 +283,11 @@ node* AnalysisV1(string s)
 
 		if (Head != nullptr)
 		{
-			Head->setLeft(AnalysisV1(subleft == "" ? "0" : subleft));
-			Head->setRight(AnalysisV1(subright == "" ? "0" : subright));
+			if (subleft != "")
+				Head->setLeft(AnalysisV1(subleft));
+
+			if (subright != "")
+				Head->setRight(AnalysisV1(subright));
 
 			return Head;
 		}
@@ -447,178 +426,3 @@ node* GenerateGraph(string s, int Type)
 	else
 		return nullptr;
 }
-
-string preOrder(node* root)
-{
-	if (root)
-	{
-		stack<node*> nStack;
-		string retStr;
-		retStr += root->getVal();
-		if ( root->getRight() ) nStack.push( root->getRight() );
-		if ( root->getLeft() ) nStack.push( root->getLeft() );
-		while ( !nStack.empty() )
-		{
-			node* tempNode = nStack.top();
-			retStr += ' ' + tempNode->getVal();
-			nStack.pop();
-			if ( tempNode->getRight() ) nStack.push( tempNode->getRight() );
-			if ( tempNode->getLeft() ) nStack.push( tempNode->getLeft() );
-		}
-		
-		return retStr;
-	}
-	else 
-	{
-		cout << "Tree does not exist!\n";
-		
-		return "";
-	}
-}
-
-string postOrder(node* root)
-{
-	if (root)
-	{
-		stack<node*> nStack1;
-		stack<node*> nStack2;		
-		nStack1.push(root);
-		while ( !nStack1.empty() )
-		{
-			node* tempNode = nStack1.top();
-			nStack1.pop();
-			nStack2.push(tempNode);
-			if ( tempNode->getLeft() ) nStack1.push( tempNode->getLeft() );
-			if ( tempNode->getRight() ) nStack1.push( tempNode->getRight() );
-		}
-		
-		int stack2Size = nStack2.size();
-		string retStr;
-		for ( ; stack2Size - 1; stack2Size--)
-		{
-			retStr += nStack2.top()->getVal() + ' ';
-			nStack2.pop();
-		}
-		
-		retStr += nStack2.top()->getVal();
-		nStack2.pop();
-		
-		return retStr;
-	}
-	else 
-	{
-		cout << "Tree does not exist!\n";
-		
-		return "";
-	}
-}
-
-string reverse(string str)
-{
-	stringstream ssin(str);
-	stack<string> sStack;
-	string temp;
-	while ( !ssin.eof() )
-	{
-		ssin >> temp;
-		sStack.push(temp); 
-	}
-	
-	string retStr;
-	retStr += sStack.top();
-	sStack.pop();
-	while ( !sStack.empty() )
-	{
-		retStr += ' ' + sStack.top();
-		sStack.pop();
-	}
-	
-	return retStr;
-}
-
-double expressionEval(string str, EvalOption opt /*= undetermined*/)
-{
-	switch (opt)
-	{
-		case prefix:
-			str = reverse(str);
-			break;
-		case postfix:
-			break;
-	}
-	
-	stringstream sstr(str);
-	stack<double> dStack;
-	string temp;
-	while ( !sstr.eof() )
-	{
-		sstr >> temp;
-		if ( temp.size() == 1)
-		{
-			if (temp[0] >= '0' && temp[0] <= '9') 
-			{
-				dStack.push( stod(temp) );
-				continue;	
-			}
-			else 
-			{
-				double op1;
-				double op2;
-				if (opt == prefix)
-				{
-					op1 = dStack.top();
-					dStack.pop();
-					op2 = dStack.top();
-					dStack.pop();
-				}
-				else 
-				{
-					op2 = dStack.top();
-					dStack.pop();
-					op1 = dStack.top();
-					dStack.pop();
-				}
-				switch (char(temp[0]))
-				{
-					case '*':
-						dStack.push(op1*op2);
-						break;
-					case '/':
-						if (!op2) 
-						{
-							cerr << "Divide by 0 error!\n";
-							exit(1);
-						}
-						dStack.push(op1/op2);
-						break;
-					case '+':
-						dStack.push(op1+op2);
-						break;
-					case '-':
-						dStack.push(op1-op2);
-						break;
-					case '^':
-						if (op1 != 0.0 && op2 != 0.0) dStack.push( pow(op1, op2) );
-						else 
-						{
-							cerr << "Undefined error!\n";
-							exit(1);
-						} 
-						break;
-					default:
-						cout << "Illegal operator \"" << temp << "\"\n";
-						break;
-					
-				}
-			}
-		}
-		else dStack.push( stod(temp) );
-	}
-	if ( !dStack.empty() ) return dStack.top();
-	else 
-	{
-		cerr << "Expression error!\n";
-		exit(1);
-	}
-}
-
