@@ -1,6 +1,6 @@
 /*
-bool checkPrecedence(string tmp, int counter, bool& check, int& temp)
-Input: a string, an integer, a reference of a bool and an int variable.
+bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, int& temp)
+Input: a string, an integer, a reference of two bool and an int variable.
 Output: True if there is a precedence error, otherwise false.
 Description:
 	-If tmp[counter] is '*' or '/' operator, "check" will be set to true. If it is '+' or '-' operator, "check" will be set to false 

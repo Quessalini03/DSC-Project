@@ -42,28 +42,32 @@ bool bracesIsBalanced(string str) //  )((
     if (cStack.size() == 0) return 1;
     else return 0;
 }
-bool checkPrecedence(string tmp, int counter, bool& check, int& temp)
+bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, int& temp)
 {
-    if (tmp[counter] == ')')
-        if (tmp[counter - 1] != '(') temp = 0;
-    if (OpPrec(tmp[counter]) == 2)
+    if (isdigit(tmp[counter])) condition = true;
+    if (condition)
     {
-        if (temp == 0) check = false;
-        if (check == true) return true;
-        check = true;
-        temp++;
-    }
-    if (OpPrec(tmp[counter]) == 1)
-    {
+        if (tmp[counter] == ')')
+            if (tmp[counter - 1] != '(') temp = 0;
+        if (OpPrec(tmp[counter]) == 2)
+        {
+            if (temp == 0) check = false;
+            if (check == true) return true;
+            check = true;
+            temp++;
+        }
         if (OpPrec(tmp[counter]) == 1)
         {
-            if (OpPrec(tmp[counter + 1]) == 1) return false;
-            while (tmp[counter + 1] == ' ') counter++;
-            if (OpPrec(tmp[counter + 1]) == 1) return false;
-            if (temp == 0) check = true;
-            if (check == false) return true;
-            check = false;
-            temp++;
+            if (OpPrec(tmp[counter]) == 1)
+            {
+                if (OpPrec(tmp[counter + 1]) == 1) return false;
+                while (tmp[counter + 1] == ' ') counter++;
+                if (OpPrec(tmp[counter + 1]) == 1) return false;
+                if (temp == 0) check = true;
+                if (check == false) return true;
+                check = false;
+                temp++;
+            }
         }
     }
     return false;
@@ -83,7 +87,7 @@ bool checkBlank(string str)
 }
 void errorCheck(string input)//function will cerr error name and exit(1) if there is an error
 {
-    bool check = true;
+    bool check = true, condition = false;
     int temp = 0;
     int counter = 0;
     while (input[counter] != '\0')
@@ -101,7 +105,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
                 exit(1);
             }
         }
-        if (checkPrecedence(input, counter, check, temp))
+        if (checkPrecedence(input, counter, condition, check, temp))
         {
             cerr << "Precedence Error";
             exit(1);
@@ -128,7 +132,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
 int main()
 {
     //driver code
-    string tmp = "((1.2 () + 1 / 2 () + 2) - 2.3)";
+    string tmp = "-((1.2 () + 1 / 2 () + 2) - 2.3)";
     errorCheck(tmp);
     cout << "do something" << endl;
     return 0;
