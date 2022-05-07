@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stack>
 #include <string>
-#include <string.h>
 #include <sstream>
 #include <cmath>
 #include <iomanip>
@@ -87,7 +86,7 @@ double expressionEval(string str, EvalOption opt)
 	}
 	
 	stringstream sstr(str);
-	stack<double> dStack;
+	stack<double> bStack;
 	string temp;
 	while ( !sstr.eof() )
 	{
@@ -96,7 +95,7 @@ double expressionEval(string str, EvalOption opt)
 		{
 			if (temp[0] >= '0' && temp[0] <= '9') 
 			{
-				dStack.push( stod(temp) );
+				bStack.push( stod(temp) );
 				continue;	
 			}
 			else 
@@ -105,22 +104,22 @@ double expressionEval(string str, EvalOption opt)
 				double op2;
 				if (opt == prefix)
 				{
-					op1 = dStack.top();
-					dStack.pop();
-					op2 = dStack.top();
-					dStack.pop();
+					op1 = bStack.top();
+					bStack.pop();
+					op2 = bStack.top();
+					bStack.pop();
 				}
 				else 
 				{
-					op2 = dStack.top();
-					dStack.pop();
-					op1 = dStack.top();
-					dStack.pop();
+					op2 = bStack.top();
+					bStack.pop();
+					op1 = bStack.top();
+					bStack.pop();
 				}
 				switch (char(temp[0]))
 				{
 					case '*':
-						dStack.push(op1*op2);
+						bStack.push(op1*op2);
 						break;
 					case '/':
 						if (!op2) 
@@ -128,16 +127,16 @@ double expressionEval(string str, EvalOption opt)
 							cerr << "Divide by 0 error!\n";
 							exit(1);
 						}
-						dStack.push(op1/op2);
+						bStack.push(op1/op2);
 						break;
 					case '+':
-						dStack.push(op1+op2);
+						bStack.push(op1+op2);
 						break;
 					case '-':
-						dStack.push(op1-op2);
+						bStack.push(op1-op2);
 						break;
 					case '^':
-						if (op1 != 0.0 && op2 != 0.0) dStack.push( pow(op1, op2) );
+						if (op1 != 0.0 && op2 != 0.0) bStack.push( pow(op1, op2) );
 						else 
 						{
 							cerr << "Undefined error!\n";
@@ -151,9 +150,9 @@ double expressionEval(string str, EvalOption opt)
 				}
 			}
 		}
-		else dStack.push( stod(temp) );
+		else bStack.push( stod(temp) );
 	}
-	if ( !dStack.empty() ) return dStack.top();
+	if ( !bStack.empty() ) return bStack.top();
 	else 
 	{
 		cerr << "Expression error!\n";

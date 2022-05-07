@@ -10,7 +10,7 @@ bool bracesIsBalanced(string str);
 int OpPrec(char c);
 bool checkConsecutiveOp(int current, int next);
 bool checkFloatingPoint(char current, char next);
-bool checkPrecedence(string tmp, int counter, bool& check, int& temp);
+bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, int& temp);
 bool checkBlank(string str);
 void errorCheck(string input);
 void eraseBlank(string & str);
@@ -113,28 +113,32 @@ bool checkFloatingPoint(char current, char next)
     return false;
 }
 
-bool checkPrecedence(string tmp, int counter, bool& check, int& temp)
+bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, int& temp)
 {
-    if (tmp[counter] == ')')
-        if (tmp[counter - 1] != '(') temp = 0;
-    if (OpPrec(tmp[counter]) == 2)
+    if (isdigit(tmp[counter])) condition = true;
+    if (condition)
     {
-        if (temp == 0) check = false;
-        if (check == true) return true;
-        check = true;
-        temp++;
-    }
-    if (OpPrec(tmp[counter]) == 1)
-    {
+        if (tmp[counter] == ')')
+            if (tmp[counter - 1] != '(') temp = 0;
+        if (OpPrec(tmp[counter]) == 2)
+        {
+            if (temp == 0) check = false;
+            if (check == true) return true;
+            check = true;
+            temp++;
+        }
         if (OpPrec(tmp[counter]) == 1)
         {
-            if (OpPrec(tmp[counter + 1]) == 1) return false;
-            while (tmp[counter + 1] == ' ') counter++;
-            if (OpPrec(tmp[counter + 1]) == 1) return false;
-            if (temp == 0) check = true;
-            if (check == false) return true;
-            check = false;
-            temp++;
+            if (OpPrec(tmp[counter]) == 1)
+            {
+                if (OpPrec(tmp[counter + 1]) == 1) return false;
+                while (tmp[counter + 1] == ' ') counter++;
+                if (OpPrec(tmp[counter + 1]) == 1) return false;
+                if (temp == 0) check = true;
+                if (check == false) return true;
+                check = false;
+                temp++;
+            }
         }
     }
     return false;
@@ -156,7 +160,7 @@ bool checkBlank(string str)
 
 void errorCheck(string input)//function will cerr error name and exit(1) if there is an error
 {
-    bool check = true;
+    bool check = true, condition = false;
     int temp = 0;
     int counter = 0;
     while (input[counter] != '\0')
@@ -165,25 +169,25 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (!bracesIsBalanced(input))
             {
-                cerr << "Syntax error!";
+                cerr << "Parenthesis error";
                 exit(1);
             }
             if (checkBlank(input))
             {
-                cerr << "Syntax error!";
+                cerr << "Blank error";
                 exit(1);
             }
         }
-        if (checkPrecedence(input, counter, check, temp))
+        if (checkPrecedence(input, counter, condition, check, temp))
         {
-            cerr << "Multiple-output error!";
+            cerr << "Precedence Error";
             exit(1);
         }
         if (OpPrec(input[counter]) >= 2) // only need to check if op = * or / of ^
         {
             if (checkConsecutiveOp(OpPrec(input[counter]), OpPrec(input[counter + 1])))
             {
-                cerr << "Undefined error!";
+                cerr << "Invalid Input Error";
                 exit(1);
             }
         }
@@ -191,7 +195,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (checkFloatingPoint(input[counter], input[counter + 1]))
             {
-                cerr << "Syntax error!";
+                cerr << "FLoating Point Error";
                 exit(1);
             }
         }
@@ -315,14 +319,11 @@ node* FindingChar(string& subleft, string& subright, string const& charlist, str
 	node* Head = nullptr;
 
 	string* ptr = &subright;
-	
-	int lenEx = expression.length();
-	int lenCh = charlist.length();
-	int lenPreCh = precharList.length();
-	for (int i = lenEx - 1; i >= 0; i--)
+
+	for (int i = expression.length() - 1; i >= 0; i--)
 	{
 		bool isOperator = false;
-		for (int j = 0; j < lenCh; j++)
+		for (int j = 0; j < charlist.length(); j++)
 		{
 			if (expression[i] == charlist[j])
 			{
@@ -331,7 +332,7 @@ node* FindingChar(string& subleft, string& subright, string const& charlist, str
 					if (i > 0)
 					{
 						bool isAdjacency = false;
-						for (int k = 0; k < lenPreCh; k++)
+						for (int k = 0; k < precharList.length(); k++)
 						{
 							if (expression[i - 1] == precharList[k])
 							{
@@ -384,11 +385,9 @@ node* FindingChar(string& subleft, string& subright, string const& charlist, str
 
 bool isExpression(string expression, string operatorlist)
 {
-	int lenEx = expression.length();
-	int lenOp = operatorlist.length();
-	for (int i = 0; i < lenEx; i++)
+	for (int i = 0; i < expression.length(); i++)
 	{
-		for (int j = 0; j < lenOp; j++)
+		for (int j = 0; j < operatorlist.length(); j++)
 		{
 			if (expression[i] == operatorlist[j])
 				return true;
@@ -422,8 +421,11 @@ node* AnalysisV1(string s)
 		// If not we will continue checking to another operator with the order: "+-" -> "*/" -> "^" -> "()"
 		if (Head != nullptr)
 		{
-			Head->setLeft(AnalysisV1(subleft == "" ? "0" : subleft));
-			Head->setRight(AnalysisV1(subright == "" ? "0" : subright));
+			if (subleft != "")
+				Head->setLeft(AnalysisV1(subleft));
+
+			if (subright != "")
+				Head->setRight(AnalysisV1(subright));
 
 			return Head;
 		}
@@ -439,8 +441,11 @@ node* AnalysisV1(string s)
 		// Recursive or not
 		if (Head != nullptr)
 		{
-			Head->setLeft(AnalysisV1(subleft == "" ? "0" : subleft));
-			Head->setRight(AnalysisV1(subright == "" ? "0" : subright));
+			if (subleft != "")
+				Head->setLeft(AnalysisV1(subleft));
+
+			if (subright != "")
+				Head->setRight(AnalysisV1(subright));
 
 			return Head;
 		}
@@ -456,8 +461,11 @@ node* AnalysisV1(string s)
 
 		if (Head != nullptr)
 		{
-			Head->setLeft(AnalysisV1(subleft == "" ? "0" : subleft));
-			Head->setRight(AnalysisV1(subright == "" ? "0" : subright));
+			if (subleft != "")
+				Head->setLeft(AnalysisV1(subleft));
+
+			if (subright != "")
+				Head->setRight(AnalysisV1(subright));
 
 			return Head;
 		}
