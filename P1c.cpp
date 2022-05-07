@@ -86,7 +86,7 @@ double expressionEval(string str, EvalOption opt)
 	}
 	
 	stringstream sstr(str);
-	stack<double> bStack;
+	stack<double> dStack;
 	string temp;
 	while ( !sstr.eof() )
 	{
@@ -95,7 +95,7 @@ double expressionEval(string str, EvalOption opt)
 		{
 			if (temp[0] >= '0' && temp[0] <= '9') 
 			{
-				bStack.push( stod(temp) );
+				dStack.push( stod(temp) );
 				continue;	
 			}
 			else 
@@ -104,22 +104,22 @@ double expressionEval(string str, EvalOption opt)
 				double op2;
 				if (opt == prefix)
 				{
-					op1 = bStack.top();
-					bStack.pop();
-					op2 = bStack.top();
-					bStack.pop();
+					op1 = dStack.top();
+					dStack.pop();
+					op2 = dStack.top();
+					dStack.pop();
 				}
 				else 
 				{
-					op2 = bStack.top();
-					bStack.pop();
-					op1 = bStack.top();
-					bStack.pop();
+					op2 = dStack.top();
+					dStack.pop();
+					op1 = dStack.top();
+					dStack.pop();
 				}
 				switch (char(temp[0]))
 				{
 					case '*':
-						bStack.push(op1*op2);
+						dStack.push(op1*op2);
 						break;
 					case '/':
 						if (!op2) 
@@ -127,16 +127,16 @@ double expressionEval(string str, EvalOption opt)
 							cerr << "Divide by 0 error!\n";
 							exit(1);
 						}
-						bStack.push(op1/op2);
+						dStack.push(op1/op2);
 						break;
 					case '+':
-						bStack.push(op1+op2);
+						dStack.push(op1+op2);
 						break;
 					case '-':
-						bStack.push(op1-op2);
+						dStack.push(op1-op2);
 						break;
 					case '^':
-						if (op1 != 0.0 && op2 != 0.0) bStack.push( pow(op1, op2) );
+						if (op1 != 0.0 && op2 != 0.0) dStack.push( pow(op1, op2) );
 						else 
 						{
 							cerr << "Undefined error!\n";
@@ -150,9 +150,9 @@ double expressionEval(string str, EvalOption opt)
 				}
 			}
 		}
-		else bStack.push( stod(temp) );
+		else dStack.push( stod(temp) );
 	}
-	if ( !bStack.empty() ) return bStack.top();
+	if ( !dStack.empty() ) return dStack.top();
 	else 
 	{
 		cerr << "Expression error!\n";
