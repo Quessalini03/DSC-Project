@@ -83,9 +83,9 @@ bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, bool
         }
         if (OpPrec(tmp[counter]) == 1)
         {
-            if (OpPrec(tmp[counter + 1]) == 1) return false;
-            while (tmp[counter + 1] == ' ') counter++;
-            if (OpPrec(tmp[counter + 1]) == 1) return false;
+            while (tmp[counter - 1] == ' ') counter--;
+            if (OpPrec(tmp[counter - 1]) == 1 || OpPrec(tmp[counter - 1]) == 2)
+                return false;
             if (temp)
             {
                 if (firstOp2)
@@ -169,7 +169,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
 int main()
 {
     //driver code
-    string tmp = "1+2^3()*(-1-2*3-4)-1/(-1.4/3-1)+2";
+    string tmp = "(7/-2+3)-(3/2-1*-2)/2";
     errorCheck(tmp);
     cout << "do something" << endl;
     return 0;
