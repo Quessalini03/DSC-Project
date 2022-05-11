@@ -63,25 +63,25 @@ int main()
 
 bool bracesIsBalanced(string str)
 {
-	stack<char> cStack;
-	for (int i = 0; str[i]; i++) 
-	{
-		if (str[i] == '(' || str[i] == ')')
-		{
-			if (cStack.empty()) 
-			{
-				if (str[i] == ')') return 0;
-				else cStack.push( char(str[i]) );
-			}
-			else 
-			{
-				if (str[i] == ')') cStack.pop();
-				else cStack.push( char(str[i]) );
-			}
-		}
-	}
-	if (cStack.size() == 0) return 1;
-	else return 0;
+    stack<char> cStack;
+    for (int i = 0; str[i]; i++) 
+    {
+        if (str[i] == '(' || str[i] == ')')
+        {
+            if (cStack.empty()) 
+            {
+                if (str[i] == ')') return 0;
+                else cStack.push( char(str[i]) );
+            }
+            else 
+            {
+                if (str[i] == ')') cStack.pop();
+                else cStack.push( char(str[i]) );
+            }
+        }
+    }
+    if (cStack.size() == 0) return 1;
+    else return 0;
 }
 
 int OpPrec(char c)
@@ -233,111 +233,111 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
 
 void eraseBlank(string & str)
 {
-	int low = 0;
-	int high = 0;
-	bool remove = 0;
-	for (int i = 0; str[i]; i++)
-	{
-		if (!remove)
-		{
-			if (str[i] == ' ')
-			{
-				low = i;
-				high = i;
-				remove = 1;
-			}
-		}
-		else 
-		{
-			if (str[i] == ' ')
-			{
-				if (str[i+1] == ' ') continue;
-			 	high = i;
-			}
-			if ( !(str[low - 1] >= '0' && str[low - 1] <= '9' && str[high + 1] >= '0' && str[high + 1] <= '9') )
-			{
-				str.erase(low, high - low + 1);
-				i = low - 1;
-			}
-			remove = 0;
-		}
-	}
+    int low = 0;
+    int high = 0;
+    bool remove = 0;
+    for (int i = 0; str[i]; i++)
+    {
+        if (!remove)
+        {
+            if (str[i] == ' ')
+            {
+            	low = i;
+            	high = i;
+            	remove = 1;
+            }
+        }
+        else 
+        {
+            if (str[i] == ' ')
+            {
+            	if (str[i+1] == ' ') continue;
+             	high = i;
+            }
+            if ( !(str[low - 1] >= '0' && str[low - 1] <= '9' && str[high + 1] >= '0' && str[high + 1] <= '9') )
+            {
+            	str.erase(low, high - low + 1);
+            	i = low - 1;
+            }
+            remove = 0;
+        }
+    }
 }
 
 void removeEmptyParen(string & str)
 {
-	stack<int> iStack;
-	for (int i = 0; str[i]; i++)
-	{
-		if (str[i] == '(') iStack.push(i);
-		else if (str[i] == ')') 
-		{ 
-			int topOfStack = iStack.top();
-			if ((i - topOfStack) == 1)
-			{
-				str.erase(topOfStack, 2);
-				i = iStack.top()-1;
-				iStack.pop();
-			}
-			else iStack.pop();
-		}
-	}
+    stack<int> iStack;
+    for (int i = 0; str[i]; i++)
+    {
+        if (str[i] == '(') iStack.push(i);
+        else if (str[i] == ')') 
+        { 
+            int topOfStack = iStack.top();
+            if ((i - topOfStack) == 1)
+            {
+                str.erase(topOfStack, 2);
+                i = iStack.top()-1;
+                iStack.pop();
+            }
+            else iStack.pop();
+        }
+    }
 }
 
 void reduceConsecutiveAddnSub(string & str)
 {
-	int low = -1;
-	int high = -1;
-	int countSub = 0;
-	int countAdd = 0;
-	bool reduceMode = 0;
-	for (int i = 0; str[i]; i++)
-	{
-		if (!reduceMode)
-		{
-			bool seeAddOrSub = str[i] == '+' || str[i] == '-';
-			if (seeAddOrSub)
-			{
-				low = i;
-				high = i;
-				reduceMode = 1;
-				countAdd += int(str[i] == '+');
-				countSub += int(str[i] == '-');
-			}
-		}
-		else
-		{
-			bool seeAddOrSub = str[i] == '+' || str[i] == '-';
-			bool seeAddOrSubNext = str[i+1] == '+' || str[i+1] == '-';
-			if (seeAddOrSub)
-			{
-				high = i;
-				countAdd += int(str[i] == '+');
-				countSub += int(str[i] == '-');
-				if (seeAddOrSubNext) continue;
-			}
-			if ( (countAdd + countSub) > 1 )
-			{
-				str.erase(low, high - low + 1);
-				int remain = countSub % 2;
-				if (remain) str.insert(low, "-");
-				else str.insert(low, "+");
-				i = low - 1;
-			}
-			low = -1;
-			high = -1;
-			reduceMode = 0;
-			countAdd = 0;
-			countSub = 0;
-		}
-	}
+    int low = -1;
+    int high = -1;
+    int countSub = 0;
+    int countAdd = 0;
+    bool reduceMode = 0;
+    for (int i = 0; str[i]; i++)
+    {
+        if (!reduceMode)
+        {
+            bool seeAddOrSub = str[i] == '+' || str[i] == '-';
+            if (seeAddOrSub)
+            {
+            	low = i;
+            	high = i;
+            	reduceMode = 1;
+            	countAdd += int(str[i] == '+');
+            	countSub += int(str[i] == '-');
+            }
+        }
+        else
+        {
+            bool seeAddOrSub = str[i] == '+' || str[i] == '-';
+            bool seeAddOrSubNext = str[i+1] == '+' || str[i+1] == '-';
+            if (seeAddOrSub)
+            {
+                high = i;
+                countAdd += int(str[i] == '+');
+                countSub += int(str[i] == '-');
+                if (seeAddOrSubNext) continue;
+            }
+            if ( (countAdd + countSub) > 1 )
+            {
+                str.erase(low, high - low + 1);
+                int remain = countSub % 2;
+                if (remain) str.insert(low, "-");
+                else str.insert(low, "+");
+                i = low - 1;
+            }
+            low = -1;
+            high = -1;
+            reduceMode = 0;
+            countAdd = 0;
+            countSub = 0;
+        }
+    }
 }
 
 void preprocess(string & str)
 {
-	eraseBlank(str);
-	removeEmptyParen(str);
-	reduceConsecutiveAddnSub(str);
+    eraseBlank(str);
+    removeEmptyParen(str);
+    reduceConsecutiveAddnSub(str);
 }
 
 node* FindingChar(string& subleft, string& subright, string const& charlist, string const& precharList, string expression)
