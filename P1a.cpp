@@ -6,19 +6,10 @@ using namespace std;
 
 class node;
 
-bool bracesIsBalanced(string str);
-int OpPrec(char c);
-bool checkConsecutiveOp(int current, int next);
-bool checkFloatingPoint(char current, char next);
-bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, int& temp);
-bool checkBlank(string str);
 void errorCheck(string input);
-void eraseBlank(string & str);
-void removeEmptyParen(string & str);
 void preprocess(string & str);
 node* GenerateGraph(string s);
 string preOrder(node* root);
-void reduceConsecutiveAddnSub(string & str);
 
 class node
 {
@@ -113,31 +104,69 @@ bool checkFloatingPoint(char current, char next)
     return false;
 }
 
-bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, int& temp)
+bool checkPrecedence(string tmp, int counter, bool& condition, bool& check, bool& checkBrace, bool& firstOp, bool& firstOp2, bool& temp)
 {
     if (isdigit(tmp[counter])) condition = true;
+    if (tmp[counter] == '(')
+    {
+        condition = false;
+        temp = true;
+    }
+    if (tmp[counter] == ')')
+    {
+        temp = false;
+        firstOp2 = true;
+        condition = true;
+    }
     if (condition)
     {
-        if (tmp[counter] == ')')
-            if (tmp[counter - 1] != '(') temp = 0;
         if (OpPrec(tmp[counter]) == 2)
         {
-            if (temp == 0) check = false;
-            if (check == true) return true;
-            check = true;
-            temp++;
+            if (temp)
+            {
+                if (firstOp2)
+                {
+                    checkBrace = false;
+                    firstOp2 = false;
+                }
+                if (checkBrace == true) return true;
+                checkBrace = true;
+            }
+            else
+            {
+                if (firstOp)
+                {
+                    check = false;
+                    firstOp = false;
+                }
+                if (check == true) return true;
+                check = true;
+            }
         }
         if (OpPrec(tmp[counter]) == 1)
         {
-            if (OpPrec(tmp[counter]) == 1)
+            while (tmp[counter - 1] == ' ') counter--;
+            if (OpPrec(tmp[counter - 1]) == 1 || OpPrec(tmp[counter - 1]) == 2)
+                return false;
+            if (temp)
             {
-                if (OpPrec(tmp[counter + 1]) == 1) return false;
-                while (tmp[counter + 1] == ' ') counter++;
-                if (OpPrec(tmp[counter + 1]) == 1) return false;
-                if (temp == 0) check = true;
+                if (firstOp2)
+                {
+                    checkBrace = true;
+                    firstOp2 = false;
+                }
+                if (checkBrace == false) return true;
+                checkBrace = false;
+            }
+            else
+            {
+                if (firstOp)
+                {
+                    check = true;
+                    firstOp = false;
+                }
                 if (check == false) return true;
                 check = false;
-                temp++;
             }
         }
     }
@@ -160,8 +189,7 @@ bool checkBlank(string str)
 
 void errorCheck(string input)//function will cerr error name and exit(1) if there is an error
 {
-    bool check = true, condition = false;
-    int temp = 0;
+    bool check = true, checkBrace = true, condition = false, temp = false, firstOp = true, firstOp2 = true;
     int counter = 0;
     while (input[counter] != '\0')
     {
@@ -169,25 +197,25 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (!bracesIsBalanced(input))
             {
-                cerr << "Parenthesis error";
+                cerr << "syntax error";
                 exit(1);
             }
             if (checkBlank(input))
             {
-                cerr << "Blank error";
+                cerr << "syntax error";
                 exit(1);
             }
         }
-        if (checkPrecedence(input, counter, condition, check, temp))
+        if (checkPrecedence(input, counter, condition, check, checkBrace, firstOp, firstOp2, temp))
         {
-            cerr << "Precedence Error";
+            cerr << "multiple-output error";
             exit(1);
         }
         if (OpPrec(input[counter]) >= 2) // only need to check if op = * or / of ^
         {
             if (checkConsecutiveOp(OpPrec(input[counter]), OpPrec(input[counter + 1])))
             {
-                cerr << "Invalid Input Error";
+                cerr << "undefined error";
                 exit(1);
             }
         }
@@ -195,7 +223,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (checkFloatingPoint(input[counter], input[counter + 1]))
             {
-                cerr << "FLoating Point Error";
+                cerr << "syntax error";
                 exit(1);
             }
         }
