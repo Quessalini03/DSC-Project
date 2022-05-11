@@ -169,7 +169,7 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
 int main()
 {
     //driver code
-    string tmp = "(7/-2+3)-(3/2-1*-2)/2";
+    string tmp = "7/-3 - 5*-3";
     errorCheck(tmp);
     cout << "do something" << endl;
     return 0;
