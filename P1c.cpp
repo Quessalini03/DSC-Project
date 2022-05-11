@@ -48,7 +48,7 @@ int main()
         }
     }
     double res = expressionEval(str, EvalOption(opt));
-    cout << "Result: " << fixed << setprecision(4) << res << '\n';	
+    cout << "Result: " << fixed << setprecision(4) << res << '\n';    
     return 0;
 }
 
@@ -92,18 +92,18 @@ void count(string str, int& leavesCount,int& internalNodesCount,int& minusSignCo
 {
     for (int i = 0; str[i]; ++i)
     {
-    	if (isOperator(str[i]))
-    	{
+        if (isOperator(str[i]))
+        {
             ++internalNodesCount;
             if (str[i] == '-')
             ++minusSignCount;
-    	}
-    	else if (isNumber(str[i]))
-    	{
+        }
+        else if (isNumber(str[i]))
+        {
             ++leavesCount;
             while (str[i] != ' ' && str[i])
                 ++i;
-    	}
+        }
     }
 }
 
@@ -131,11 +131,11 @@ double expressionEval(string str, EvalOption opt)
 {
     switch (opt)
     {
-    	case prefix:
-    		str = reverse(str);
-    		break;
-    	case postfix:
-    		break;
+        case prefix:
+            str = reverse(str);
+            break;
+        case postfix:
+            break;
     }
     // 1 means all minus sign are used to do subtraction, 0 means used to change sign
     bool areAllMinus = processing(str);
@@ -150,7 +150,7 @@ double expressionEval(string str, EvalOption opt)
             if (temp[0] >= '0' && temp[0] <= '9') 
             {
                 dStack.push( stod(temp) );
-                continue;	
+                continue;    
             }
             else if (temp[0] != '-')
             {
@@ -199,10 +199,10 @@ double expressionEval(string str, EvalOption opt)
                         cout << "Illegal operator \"" << temp << "\"\n";
                         exit(1);
 
-    			}
-    		}
-    		else
-    		{
+                }
+            }
+            else
+            {
                 if (areAllMinus)
                 {
                     double op1;
@@ -229,8 +229,8 @@ double expressionEval(string str, EvalOption opt)
                     dStack.pop();
                     dStack.push(-op);
                 }
-    		}
-    	}
+            }
+        }
         else dStack.push( stod(temp) );
     }
     if ( !dStack.empty() ) return dStack.top();

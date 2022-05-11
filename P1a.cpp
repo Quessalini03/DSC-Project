@@ -36,12 +36,12 @@ public:
     {
         cout << "(";
         if (left != nullptr)
-        	left->showNode();
+            left->showNode();
         
         cout << val;
         
         if (right != nullptr)
-        	right->showNode();
+            right->showNode();
         cout << ")";
     }
 };
@@ -242,22 +242,22 @@ void eraseBlank(string & str)
         {
             if (str[i] == ' ')
             {
-            	low = i;
-            	high = i;
-            	remove = 1;
+                low = i;
+                high = i;
+                remove = 1;
             }
         }
         else 
         {
             if (str[i] == ' ')
             {
-            	if (str[i+1] == ' ') continue;
-             	high = i;
+                if (str[i+1] == ' ') continue;
+                 high = i;
             }
             if ( !(str[low - 1] >= '0' && str[low - 1] <= '9' && str[high + 1] >= '0' && str[high + 1] <= '9') )
             {
-            	str.erase(low, high - low + 1);
-            	i = low - 1;
+                str.erase(low, high - low + 1);
+                i = low - 1;
             }
             remove = 0;
         }
@@ -298,11 +298,11 @@ void reduceConsecutiveAddnSub(string & str)
             bool seeAddOrSub = str[i] == '+' || str[i] == '-';
             if (seeAddOrSub)
             {
-            	low = i;
-            	high = i;
-            	reduceMode = 1;
-            	countAdd += int(str[i] == '+');
-            	countSub += int(str[i] == '-');
+                low = i;
+                high = i;
+                reduceMode = 1;
+                countAdd += int(str[i] == '+');
+                countSub += int(str[i] == '-');
             }
         }
         else
@@ -342,169 +342,169 @@ void preprocess(string & str)
 
 node* FindingChar(string& subleft, string& subright, string const& charlist, string const& precharList, string expression)
 {
-	int numpara = 0;
+    int numpara = 0;
 
-	node* Head = nullptr;
+    node* Head = nullptr;
 
-	string* ptr = &subright;
+    string* ptr = &subright;
 
-	for (int i = expression.length() - 1; i >= 0; i--)
-	{
-		bool isOperator = false;
-		for (int j = 0; j < charlist.length(); j++)
-		{
-			if (expression[i] == charlist[j])
-			{
-				if (numpara == 0)
-				{
-					if (i > 0)
-					{
-						bool isAdjacency = false;
-						for (int k = 0; k < precharList.length(); k++)
-						{
-							if (expression[i - 1] == precharList[k])
-							{
-								isAdjacency = true;
-								break;
-							}
-						}
+    for (int i = expression.length() - 1; i >= 0; i--)
+    {
+        bool isOperator = false;
+        for (int j = 0; j < charlist.length(); j++)
+        {
+            if (expression[i] == charlist[j])
+            {
+                if (numpara == 0)
+                {
+                    if (i > 0)
+                    {
+                        bool isAdjacency = false;
+                        for (int k = 0; k < precharList.length(); k++)
+                        {
+                            if (expression[i - 1] == precharList[k])
+                            {
+                                isAdjacency = true;
+                                break;
+                            }
+                        }
 
-						if (!isAdjacency)
-						{
-							if (Head == nullptr)
-							{
-								Head = new node(string(1, expression[i]));
+                        if (!isAdjacency)
+                        {
+                            if (Head == nullptr)
+                            {
+                                Head = new node(string(1, expression[i]));
 
-								ptr = &subleft;
+                                ptr = &subleft;
 
-								isOperator = true;
+                                isOperator = true;
 
-								break;
-							}
-						}
-					}
-					else
-					{
-						if (Head == nullptr)
-						{
-							Head = new node(string(1, expression[i]));
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Head == nullptr)
+                        {
+                            Head = new node(string(1, expression[i]));
 
-							ptr = &subleft;
+                            ptr = &subleft;
 
-							isOperator = true;
+                            isOperator = true;
 
-							break;
-						}
-					}
-				}
-			}
-		}
-		if (isOperator == true)
-			continue;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (isOperator == true)
+            continue;
 
-		if (expression[i] == '(') numpara++;
-		else if (expression[i] == ')') numpara--;
+        if (expression[i] == '(') numpara++;
+        else if (expression[i] == ')') numpara--;
 
-		*ptr = expression[i] + *ptr;
-	}
+        *ptr = expression[i] + *ptr;
+    }
 
-	return Head;
+    return Head;
 }
 
 bool isExpression(string expression, string operatorlist)
 {
-	for (int i = 0; i < expression.length(); i++)
-	{
-		for (int j = 0; j < operatorlist.length(); j++)
-		{
-			if (expression[i] == operatorlist[j])
-				return true;
-		}
-	}
+    for (int i = 0; i < expression.length(); i++)
+    {
+        for (int j = 0; j < operatorlist.length(); j++)
+        {
+            if (expression[i] == operatorlist[j])
+                return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 node* AnalysisV1(string s)
 {
-	if (!isExpression(s, "+-*/^")) // Check the string s is a expression or not
-	{
-		if (s[0] == '(')
-		{
-			s = s.substr(1, s.length() - 2);
-		}
-		return new node(s);
-	}
-	else
-	{
-		string subleft, subright; // Store the subexpression on the left and the right
-		node* Head = nullptr; // Hold the Node
+    if (!isExpression(s, "+-*/^")) // Check the string s is a expression or not
+    {
+        if (s[0] == '(')
+        {
+            s = s.substr(1, s.length() - 2);
+        }
+        return new node(s);
+    }
+    else
+    {
+        string subleft, subright; // Store the subexpression on the left and the right
+        node* Head = nullptr; // Hold the Node
 
 #pragma region Addition and Subtraction
 
-		subleft = ""; subright = "";
-		Head = FindingChar(subleft, subright, "+-", "*/^", s); // Finding the operator
+        subleft = ""; subright = "";
+        Head = FindingChar(subleft, subright, "+-", "*/^", s); // Finding the operator
 
-		// If we found the operator "+-" then we will recursive 2 subexpression which we found in loop
-		// If not we will continue checking to another operator with the order: "+-" -> "*/" -> "^" -> "()"
-		if (Head != nullptr)
-		{
-			if (subleft != "")
-				Head->setLeft(AnalysisV1(subleft));
+        // If we found the operator "+-" then we will recursive 2 subexpression which we found in loop
+        // If not we will continue checking to another operator with the order: "+-" -> "*/" -> "^" -> "()"
+        if (Head != nullptr)
+        {
+            if (subleft != "")
+                Head->setLeft(AnalysisV1(subleft));
 
-			if (subright != "")
-				Head->setRight(AnalysisV1(subright));
+            if (subright != "")
+                Head->setRight(AnalysisV1(subright));
 
-			return Head;
-		}
+            return Head;
+        }
 
 #pragma endregion
 
-		// The case not having operator "+-" outside the parathesis in the expression. Example: 5*6*8*(3+2)
+        // The case not having operator "+-" outside the parathesis in the expression. Example: 5*6*8*(3+2)
 #pragma region Multiplication and Divsion
 
-		subleft = ""; subright = "";
-		Head = FindingChar(subleft, subright, "*/", "", s); // Finding the operator
+        subleft = ""; subright = "";
+        Head = FindingChar(subleft, subright, "*/", "", s); // Finding the operator
 
-		// Recursive or not
-		if (Head != nullptr)
-		{
-			if (subleft != "")
-				Head->setLeft(AnalysisV1(subleft));
+        // Recursive or not
+        if (Head != nullptr)
+        {
+            if (subleft != "")
+                Head->setLeft(AnalysisV1(subleft));
 
-			if (subright != "")
-				Head->setRight(AnalysisV1(subright));
+            if (subright != "")
+                Head->setRight(AnalysisV1(subright));
 
-			return Head;
-		}
+            return Head;
+        }
 
 #pragma endregion
 
-		// The case not having operator "+-" and "*/" outside the parathesis in the expression we will check exponential
-		// The procedure as Multiplication and Division
+        // The case not having operator "+-" and "*/" outside the parathesis in the expression we will check exponential
+        // The procedure as Multiplication and Division
 #pragma region Exponential
 
-		subleft = ""; subright = "";
-		Head = FindingChar(subleft, subright, "^", "", s);
+        subleft = ""; subright = "";
+        Head = FindingChar(subleft, subright, "^", "", s);
 
-		if (Head != nullptr)
-		{
-			if (subleft != "")
-				Head->setLeft(AnalysisV1(subleft));
+        if (Head != nullptr)
+        {
+            if (subleft != "")
+                Head->setLeft(AnalysisV1(subleft));
 
-			if (subright != "")
-				Head->setRight(AnalysisV1(subright));
+            if (subright != "")
+                Head->setRight(AnalysisV1(subright));
 
-			return Head;
-		}
+            return Head;
+        }
 
 #pragma endregion
 
-		// The Case not having other operator in expression. Example: (3+2): We do not having operator outside the parathesis
-		// Remove the parathesis at the beginning and ending then we will recursive the substring
-		subleft = s.substr(1, s.length() - 2);
-		return AnalysisV1(subleft);
-	}
+        // The Case not having other operator in expression. Example: (3+2): We do not having operator outside the parathesis
+        // Remove the parathesis at the beginning and ending then we will recursive the substring
+        subleft = s.substr(1, s.length() - 2);
+        return AnalysisV1(subleft);
+    }
 }
 
 node* GenerateGraph(string s)
