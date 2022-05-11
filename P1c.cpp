@@ -74,6 +74,58 @@ string reverse(string str)
 	
 	return retStr;
 }
+
+bool isOperator(char c)
+{
+	return (   (c == '+') || (c == '-')
+			|| (c == '*') || (c == '/')
+			|| (c == '^')			   );
+}
+
+bool isNumber(char c)
+{
+	return ((c >= '0') && (c <= '9'));
+}
+
+void count(string str, int& leavesCount,int& internalNodesCount,int& minusSignCount)
+{
+	for (int i = 0; str[i]; ++i)
+	{
+		if (isOperator(str[i]))
+		{
+			++internalNodesCount;
+			if (str[i] == '-')
+				++minusSignCount;
+		}
+		else if (isNumber(str[i]))
+		{
+			++leavesCount;
+			while (str[i] != ' ' && str[i])
+				++i;
+		}
+	}
+}
+
+bool processing(string str)
+{
+	int leavesCount = 0;
+	int internalNodeCount = 0;
+	int minusSignCount = 0;
+	count(str, leavesCount, internalNodeCount, minusSignCount);
+	// A full binary tree -> internal nodes = (leaves - 1)/(2-1) = leaves - 1
+	if ((leavesCount - 1) == internalNodeCount)
+		return 1;
+	// If all "-" are used to change sign, remove them from the tree
+	// will give back the full binary tree again
+	else if ((internalNodeCount - minusSignCount) == (leavesCount - 1))
+		return 0;
+	else
+	{
+		cerr << "Ambiguous \"-\" detected:\nSome are used to substract, some are used to change sign.";
+		exit(1);
+	}
+}
+
 double expressionEval(string str, EvalOption opt)
 {
 	switch (opt)
@@ -84,7 +136,8 @@ double expressionEval(string str, EvalOption opt)
 		case postfix:
 			break;
 	}
-	
+	// 1 means all minus sign are used to do subtraction, 0 means used to change sign
+	bool areAllMinus = processing(str);
 	stringstream sstr(str);
 	stack<double> dStack;
 	string temp;
@@ -98,7 +151,7 @@ double expressionEval(string str, EvalOption opt)
 				dStack.push( stod(temp) );
 				continue;	
 			}
-			else 
+			else if (temp[0] != '-')
 			{
 				double op1;
 				double op2;
@@ -119,7 +172,7 @@ double expressionEval(string str, EvalOption opt)
 				switch (char(temp[0]))
 				{
 					case '*':
-						dStack.push(op1*op2);
+						dStack.push(op1 * op2);
 						break;
 					case '/':
 						if (!op2) 
@@ -127,16 +180,14 @@ double expressionEval(string str, EvalOption opt)
 							cerr << "Divide by 0 error!\n";
 							exit(1);
 						}
-						dStack.push(op1/op2);
+						dStack.push(op1 / op2);
 						break;
 					case '+':
-						dStack.push(op1+op2);
-						break;
-					case '-':
-						dStack.push(op1-op2);
+						dStack.push(op1 + op2);
 						break;
 					case '^':
-						if (op1 != 0.0 && op2 != 0.0) dStack.push( pow(op1, op2) );
+						if (op1 != 0.0 && op2 != 0.0)
+							dStack.push( pow(op1, op2) );
 						else 
 						{
 							cerr << "Undefined error!\n";
@@ -145,8 +196,37 @@ double expressionEval(string str, EvalOption opt)
 						break;
 					default:
 						cout << "Illegal operator \"" << temp << "\"\n";
-						break;
+						exit(1);
 					
+				}
+			}
+			else
+			{
+				if (areAllMinus)
+				{
+					double op1;
+					double op2;
+					if (opt == prefix)
+					{
+						op1 = dStack.top();
+						dStack.pop();
+						op2 = dStack.top();
+						dStack.pop();
+					}
+					else 
+					{
+						op2 = dStack.top();
+						dStack.pop();
+						op1 = dStack.top();
+						dStack.pop();
+					}
+					dStack.push(op1 - op2);
+				}
+				else
+				{
+					double op = dStack.top();
+					dStack.pop();
+					dStack.push(-op);
 				}
 			}
 		}
