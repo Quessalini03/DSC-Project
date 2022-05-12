@@ -101,7 +101,7 @@ void count(string str, int& leavesCount,int& internalNodesCount,int& minusSignCo
         else if (isNumber(str[i]))
         {
             ++leavesCount;
-            while (str[i] != ' ' && str[i])
+            while (str[i] != ' ' && str[i+1])
                 ++i;
         }
     }

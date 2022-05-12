@@ -252,7 +252,7 @@ void eraseBlank(string & str)
             if (str[i] == ' ')
             {
                 if (str[i+1] == ' ') continue;
-                 high = i;
+                high = i;
             }
             if ( !(str[low - 1] >= '0' && str[low - 1] <= '9' && str[high + 1] >= '0' && str[high + 1] <= '9') )
             {
