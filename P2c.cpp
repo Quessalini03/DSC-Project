@@ -47,7 +47,13 @@ int main()
             valid = 0;
         }
     }
-    map<string, bool> m {{"p", 1}, {"q", 0}};
+    
+    map<string, bool> m
+    // Enter the map of dictionary here
+    // ************************************************************************************* 
+    {{"p", 1}, {"q", 0}, {"r", 1}, {"s", 0}} ;
+    // *************************************************************************************
+    
     bool res = expressionEval(str, EvalOption(opt), m);
     cout << "Result: " << res << '\n';    
     return 0;
@@ -103,6 +109,8 @@ bool expressionEval(string str, EvalOption opt, map<string, bool> m)
             {
                 bool op1;
                 bool op2;
+                // the popping order is important because in the stack of postorder, the first operand is below
+                // the second operand, while it is the opposite for preorder stack
                 if (opt == prefix)
                 {
                     op1 = bStack.top();
@@ -147,10 +155,5 @@ bool expressionEval(string str, EvalOption opt, map<string, bool> m)
         }
         else bStack.push( m[temp] );
     }
-    if ( !bStack.empty() ) return bStack.top();
-    else 
-    {
-        cerr << "Expression error!\n";
-        exit(1);
-    }
+    return bStack.top();
 }
