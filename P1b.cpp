@@ -302,7 +302,7 @@ void removeEmptyParen(string & str)
             int topOfStack = iStack.top();
             if ((i - topOfStack) == 1)
             {
-                if ( (str[i+1] < '0' || str[i+1] > '9') && (str[topOfStack - 1] < '0' && str[topOfStack - 1] > '9') )
+                if ( (str[i+1] < '0' || str[i+1] > '9') || (str[topOfStack - 1] < '0' || str[topOfStack - 1] > '9') )
                 {
                     str.erase(topOfStack, 2);
                     i = iStack.top()-1;

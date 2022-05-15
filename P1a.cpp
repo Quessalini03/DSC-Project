@@ -224,25 +224,25 @@ void errorCheck(string& input)//function will cerr error name and exit(1) if the
         {
             if (!bracesIsBalanced(input))
             {
-                cerr << "syntax error";
+                cerr << "Syntax error!";
                 exit(1);
             }
             if (checkBlank(input))
             {
-                cerr << "syntax error";
+                cerr << "Syntax error!";
                 exit(1);
             }
         }
         if (checkPrecedence(input, counter, condition, check, checkBrace, firstOp, firstOp2, temp))
         {
-            cerr << "multiple-output error";
+            cerr << "Multiple output error!";
             exit(1);
         }
         if (OpPrec(input[counter]) >= 2) // only need to check if op = * or / of ^
         {
             if (checkConsecutiveOp(OpPrec(input[counter]), OpPrec(input[counter + 1])))
             {
-                cerr << "undefined error";
+                cerr << "Undefined error!";
                 exit(1);
             }
         }
@@ -250,7 +250,7 @@ void errorCheck(string& input)//function will cerr error name and exit(1) if the
         {
             if (checkFloatingPoint(input[counter], input[counter + 1]))
             {
-                cerr << "syntax error";
+                cerr << "Syntax error!";
                 exit(1);
             }
         }
@@ -302,7 +302,7 @@ void removeEmptyParen(string & str)
             int topOfStack = iStack.top();
             if ((i - topOfStack) == 1)
             {
-                if ( (str[i+1] < '0' || str[i+1] > '9') && (str[topOfStack - 1] < '0' && str[topOfStack - 1] > '9') )
+                if ( (str[i+1] < '0' || str[i+1] > '9') || (str[topOfStack - 1] < '0' || str[topOfStack - 1] > '9') )
                 {
                     str.erase(topOfStack, 2);
                     i = iStack.top()-1;
