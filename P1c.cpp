@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iomanip>
 #include <limits>
+#include <algorithm>
 
 using namespace std;
 
@@ -41,7 +42,7 @@ int main()
             opt = temp;
             valid = 1;
         }
-        else 
+        else
         {
             cout << "Invalid option!\n";
             valid = 0;
@@ -127,6 +128,17 @@ bool processing(string str)
     }
 }
 
+bool approxEqual(double a, double b, double absEpsilon = 1e-12, double relEpsilon = 1e-8)
+{
+    // Check if the numbers are really close -- needed when comparing numbers near zero.
+    double diff{ std::abs(a - b) };
+    if (diff <= absEpsilon)
+        return true;
+
+    // Otherwise use Knuth's algorithm
+    return (diff <= (std::max(std::abs(a), std::abs(b)) * relEpsilon));
+}
+
 double expressionEval(string str, EvalOption opt)
 {
     switch (opt)
@@ -156,6 +168,8 @@ double expressionEval(string str, EvalOption opt)
             {
                 double op1;
                 double op2;
+                // the popping order is important because in the stack of postorder, the first operand is below
+                // the second operand, while it is the opposite for preorder stack
                 if (opt == prefix)
                 {
                     op1 = dStack.top();
@@ -176,7 +190,7 @@ double expressionEval(string str, EvalOption opt)
                         dStack.push(op1 * op2);
                         break;
                     case '/':
-                        if (!op2) 
+                        if (approxEqual(op2, 0.0)) // if the 2nd operand is 0.0
                         {
                             cerr << "Divide by 0 error!\n";
                             exit(1);
@@ -187,16 +201,16 @@ double expressionEval(string str, EvalOption opt)
                         dStack.push(op1 + op2);
                         break;
                     case '^':
-                        if (op1 != 0.0 && op2 != 0.0)
+                        if ( !(approxEqual(op1, 0.0) && approxEqual(op2, 0.0)) )
                             dStack.push( pow(op1, op2) );
-                        else 
+                        else // 1st operand and 2nd operand are both 0.0
                         {
                             cerr << "Undefined error!\n";
                             exit(1);
                         } 
                         break;
                     default:
-                        cout << "Illegal operator \"" << temp << "\"\n";
+                        cout << "Illegal operator \"" << temp << "\"!\n";
                         exit(1);
 
                 }
@@ -233,10 +247,5 @@ double expressionEval(string str, EvalOption opt)
         }
         else dStack.push( stod(temp) );
     }
-    if ( !dStack.empty() ) return dStack.top();
-    else 
-    {
-        cerr << "Expression error!\n";
-        exit(1);
-    }
+    return dStack.top();
 }
