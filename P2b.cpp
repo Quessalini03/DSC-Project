@@ -75,8 +75,9 @@ int main()
     errorCheck(s);
     
     node* Head = GenerateGraph(s);
-    string res = postOrder(Head);
-    cout << res;
+    string post = postOrder(Head);
+    cout << "Postfix form: " << post << '\n';
+    return 0;
 }
 
 bool isOp(char c)
@@ -91,13 +92,31 @@ bool checkConsecutiveOp(char current, char next)
     if (isOp(current) && isOp(next)) return true;
     return false;
 }
-bool bracesIsBalanced(string str) //  )((
+
+bool isLetter(char c)
+{
+    if ( (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') )
+        return 1;
+    return 0;
+}
+
+bool bracesIsBalanced(string str)
 {
     stack<char> cStack;
     for (int i = 0; str[i]; i++)
     {
         if (str[i] == '(' || str[i] == ')')
         {
+            if (str[i] == '(')
+            {
+                if (isLetter(str[i-1]) || (isOp(str[i+1]) && str[i+1] != '!'))
+                    return 0;
+            }
+            else
+            {
+                if (isLetter(str[i+1]) || isOp(str[i-1]))
+                    return 0;
+            }
             if (cStack.empty())
             {
                 if (str[i] == ')') return 0;
@@ -115,7 +134,8 @@ bool bracesIsBalanced(string str) //  )((
 }
 bool checkPrecedence(string str, int count, char& check)
 {
-    if (str[count] == '(') check = '\0';
+    if (str[count] == '(' || str[count] == '>' || str[count] =='!' || str[count] == '+')
+        check = '\0';
     if (str[count] == '&')
     {
         if (check == '|') return true;
@@ -225,9 +245,17 @@ void removeEmptyParen(string & str)
             int topOfStack = iStack.top();
             if ((i - topOfStack) == 1)
             {
-                str.erase(topOfStack, 2);
-                i = iStack.top()-1;
-                iStack.pop();
+                if ( !isLetter(str[i+1]) && !isLetter(str[topOfStack-1]) )
+                {
+                    str.erase(topOfStack, 2);
+                    i = iStack.top()-1;
+                    iStack.pop();    
+                }
+                else
+                {
+                    cerr << "Syntax Error!\n";
+                    exit(1);
+                }
             }
             else iStack.pop();
         }
