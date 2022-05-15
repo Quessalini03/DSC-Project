@@ -6,8 +6,8 @@ using namespace std;
 
 class node;
 
-void errorCheck(string input);
-void preprocess(string & str);
+void errorCheck(string& input);
+void preprocess(string& str);
 node* GenerateGraph(string s);
 string postOrder(node* root);
 
@@ -56,18 +56,45 @@ int main()
     errorCheck(str);
     
     node* root = GenerateGraph(str);
-    string pre = postOrder(root);
-    cout << "Postfix form: " << pre << '\n';
+    string post = postOrder(root);
+    cout << "Postfix form: " << post << '\n';
     return 0;
 }
 
-bool bracesIsBalanced(string str)
+bool isNumber(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+bool isOpDivMulPow(char c)
+{
+    return (c == '/' || c == '*' || c == '^');
+}
+
+bool isOpAll(char c)
+{
+    return (c == '/' || c == '*' || c == '^' || c == '+' || c == '-');
+}
+
+bool bracesIsBalanced(string& str)
 {
     stack<char> cStack;
     for (int i = 0; str[i]; i++) 
     {
         if (str[i] == '(' || str[i] == ')')
         {
+            if (str[i] == '(')
+            {
+                if (isNumber(str[i-1]) || isOpDivMulPow(str[i+1]))
+                    return 0;
+                if (str[i+1] == '+')
+                    str.erase(i+1, 1);
+            }
+            else
+            {
+                if (isNumber(str[i+1]) || isOpAll(str[i-1]))
+                    return 0;
+            }
             if (cStack.empty()) 
             {
                 if (str[i] == ')') return 0;
@@ -187,7 +214,7 @@ bool checkBlank(string str)
     return false;
 }
 
-void errorCheck(string input)//function will cerr error name and exit(1) if there is an error
+void errorCheck(string& input)//function will cerr error name and exit(1) if there is an error
 {
     bool check = true, checkBrace = true, condition = false, temp = false, firstOp = true, firstOp2 = true;
     int counter = 0;
@@ -275,9 +302,17 @@ void removeEmptyParen(string & str)
             int topOfStack = iStack.top();
             if ((i - topOfStack) == 1)
             {
-                str.erase(topOfStack, 2);
-                i = iStack.top()-1;
-                iStack.pop();
+                if ( (str[i+1] < '0' || str[i+1] > '9') && (str[topOfStack - 1] < '0' && str[topOfStack - 1] > '9') )
+                {
+                    str.erase(topOfStack, 2);
+                    i = iStack.top()-1;
+                    iStack.pop();    
+                }
+                else
+                {
+                    cerr << "Syntax Error!\n";
+                    exit(1);
+                }
             }
             else iStack.pop();
         }
