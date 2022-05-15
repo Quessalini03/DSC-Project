@@ -133,12 +133,12 @@ bool processing(string str)
 bool approxEqual(double a, double b, double absEpsilon = 1e-12, double relEpsilon = 1e-8)
 {
     // Check if the numbers are really close -- needed when comparing numbers near zero.
-    double diff{ std::abs(a - b) };
+    double diff{ abs(a - b) };
     if (diff <= absEpsilon)
         return true;
 
     // Otherwise use Knuth's algorithm
-    return (diff <= (std::max(std::abs(a), std::abs(b)) * relEpsilon));
+    return (diff <= (max(abs(a), abs(b)) * relEpsilon));
 }
 
 double expressionEval(string str, EvalOption opt)
