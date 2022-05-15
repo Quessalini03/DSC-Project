@@ -171,23 +171,23 @@ void errorCheck(string input)//function will cerr error name and exit(1) if ther
         {
             if (!bracesIsBalanced(input))
             {
-                cerr << "syntax error";
+                cerr << "Syntax error!";
                 exit(1);
             }
             if (checkBlank(input))
             {
-                cerr << "syntax error";
+                cerr << "Syntax error!";
                 exit(1);
             }
         }      
         if (checkConsecutiveOp(input[counter], input[counter + 1]))
         {
-            cerr << "undefined error";
+            cerr << "Undefined error!";
             exit(1);
         }
         if (checkPrecedence(input, counter, check))
         {
-            cerr << "multi-output error";
+            cerr << "Multiple output error!";
             exit(1);
         }        
         counter++;
@@ -245,7 +245,7 @@ void removeEmptyParen(string & str)
             int topOfStack = iStack.top();
             if ((i - topOfStack) == 1)
             {
-                if ( !isLetter(str[i+1]) && !isLetter(str[topOfStack-1]) )
+                if ( !isLetter(str[i+1]) || !isLetter(str[topOfStack-1]) )
                 {
                     str.erase(topOfStack, 2);
                     i = iStack.top()-1;
