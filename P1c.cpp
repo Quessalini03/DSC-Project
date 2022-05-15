@@ -123,7 +123,9 @@ bool processing(string str)
         return 0;
     else
     {
-        cerr << "Ambiguous \"-\" detected:\nSome are used to substract, some are used to change sign.";
+        cerr    << "Ambiguous \"-\" detected:\nSome are used to substract, some are used to change sign\n"
+                << "Solution: Add '0' before the number you want to change sign\n"
+                << "Example: from \"- - 10 5\" to \"- - 0 10 5\" (original infix: \"-10 - 5\")";
         exit(1);
     }
 }
